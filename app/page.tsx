@@ -1,27 +1,31 @@
 'use client';
-
-import Image from 'next/image';
 import { useSession, signIn, signOut } from "next-auth/react";
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const HomePage = () => {
   const { data: session } = useSession();
-
   return (
     <>
       {!session ? (
-        <>
-          <p>Not signed in</p>
+        <div className="inline-flex">
+          <p className='text-2xl font-bold'>Not signed in</p>
           <br />
-          <button onClick={() => signIn()}>Sign in</button>
-        </>
+          <Button onClick={() => signIn()}>Sign in</Button>
+        </div>
       ) : (
         <>
-          <p>Welcome back {session.user?.name}!</p>
+          <p className='text-2xl font-bold'>Welcome back {session.user?.name}!</p>
           {session.user?.image ?
-            <Image src={session.user?.image as string} alt="Profile picture" width={96} height={96} />
+            <div className="inline-flex">
+              <Avatar>
+                <AvatarImage src={session.user?.image as string} alt="@shadcn" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </div>
             : null}
           <br />
-          <button onClick={() => signOut()}>Sign out</button>
+          <Button onClick={() => signOut()}>Sign out</Button>
         </>
       )}
     </>
