@@ -1,7 +1,7 @@
 'use client';
 import Link from "next/link"
 import { useSession, signIn, signOut } from "next-auth/react";
-import { forwardRef } from "react";
+import { forwardRef, useEffect } from "react";
 import { cn } from "@/lib/utils"
 import { ShoppingCart } from 'lucide-react';
 import ThemeToggle from '@/components/theme/ThemeToggle';
@@ -55,6 +55,17 @@ const MainNavigation = () => {
   const userName = session?.user?.name;
   const userSplit = session?.user?.name?.split(' ');
   const userInitials = `${userSplit?.[0][0]}${userSplit?.[1][0]}`;
+
+  useEffect(() => {
+    if (session) {
+      fetch('http://localhost:3000/api/user', {
+        method: 'POST',
+        body: JSON.stringify({
+          ...session?.user,
+        })
+      });
+    }
+  }, [session]);
 
   if (status === 'loading') {
     return (

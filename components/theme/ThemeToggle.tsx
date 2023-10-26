@@ -1,17 +1,19 @@
 "use client";
-import { useTheme } from "next-themes";
-import { Moon, Sun, Loader2 } from "lucide-react"
-import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
+import { useSession } from "next-auth/react";
+import { Moon, Sun } from "lucide-react"
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ThemeToggle = () => {
+  const { data: session, status } = useSession();
   // Mounted and loading states to prevent hydration issues
   const [hasMounted, setHasMounted] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -20,12 +22,39 @@ const ThemeToggle = () => {
   useEffect(() => {
     setHasMounted(true);
     setLoaded(true);
-  }, [])
+  }, [setTheme]);
+
+  useEffect(() => {
+    if (session) {
+      fetch('http://localhost:3000/api/user')
+        .then(response => response.json())
+        .then(data => {
+          setTheme(data?.[0].theme || 'light');
+        });
+    }
+  }, [status, session, setTheme]);
 
   const handleThemeToggle = () => {
-    if (theme === 'light') setTheme('dark');
-    else setTheme('light');
-  }
+    if (theme === 'light') {
+      setTheme('dark');
+      fetch('http://localhost:3000/api/user', {
+        method: 'PUT',
+        body: JSON.stringify({
+          ...session?.user,
+          theme: 'dark'
+        })
+      })
+    } else {
+      setTheme('light');
+      fetch('http://localhost:3000/api/user', {
+        method: 'PUT',
+        body: JSON.stringify({
+          ...session?.user,
+          theme: 'light'
+        })
+      })
+    };
+  };
 
   return (
     <>
@@ -67,7 +96,5 @@ const ThemeToggle = () => {
     </>
   )
 }
-
-
 
 export default ThemeToggle;

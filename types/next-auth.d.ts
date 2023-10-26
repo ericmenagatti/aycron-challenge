@@ -6,6 +6,7 @@ declare global {
       GITHUB_ID: string;
       GITHUB_SECRET: string;
       NEXTAUTH_SECRET: string;
+      MONGODB_URI: string;
     }
   }
 }
