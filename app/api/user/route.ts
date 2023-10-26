@@ -20,18 +20,25 @@ export const GET = async () => {
   }
 };
 
-export const POST = async () => {
+export const POST = async (req: Request) => {
   try {
     const session = await getServerSession(authOptions);
     if (session) {
+      const data = await req.json();
       await dbConnect();
       const userExist = await UserModel.find({ email: session?.user?.email });
 
       if (!userExist[0]) {
-        await UserModel.create(session.user);
+        if (session?.user?.email === "ericmenagatti@gmail.com") {
+          await UserModel.create({
+            ...data,
+            role: 'admin',
+          });
+        } else {
+          await UserModel.create(data);
+        }
         return NextResponse.json({ message: 'User created successfully!' }, { status: 200 });
       }
-
       return NextResponse.json({ message: 'User already exist!' }, { status: 200 });
     } else {
       return NextResponse.json({ message: 'User does not exist' }, { status: 200 });

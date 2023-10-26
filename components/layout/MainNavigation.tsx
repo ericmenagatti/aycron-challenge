@@ -1,9 +1,10 @@
 'use client';
 import Link from "next/link"
 import { useSession, signIn, signOut } from "next-auth/react";
-import { forwardRef, useEffect } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { cn } from "@/lib/utils"
 import { ShoppingCart } from 'lucide-react';
+import { IUser } from "@/models/Users";
 import ThemeToggle from '@/components/theme/ThemeToggle';
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import Image from "next/image";
 
 const ListItem = forwardRef<
   React.ElementRef<"a">,
@@ -51,10 +53,17 @@ ListItem.displayName = "ListItem"
 
 const MainNavigation = () => {
   const { data: session, status } = useSession();
+  const [currentUser, setCurrentUser] = useState<IUser>();
 
   const userName = session?.user?.name;
   const userSplit = session?.user?.name?.split(' ');
   const userInitials = `${userSplit?.[0][0]}${userSplit?.[1][0]}`;
+
+  const handleSignOut = () => {
+    signOut({
+      callbackUrl: '/',
+    });
+  }
 
   useEffect(() => {
     if (session) {
@@ -62,8 +71,14 @@ const MainNavigation = () => {
         method: 'POST',
         body: JSON.stringify({
           ...session?.user,
+          role: 'user',
         })
       });
+      fetch('http://localhost:3000/api/user')
+        .then(response => response.json())
+        .then(data => {
+          setCurrentUser(data?.[0]);
+        });
     }
   }, [session]);
 
@@ -146,13 +161,10 @@ const MainNavigation = () => {
                       <li className="row-span-3">
                         <NavigationMenuLink asChild>
                           <>
-                            <div className="mb-2 mt-4 text-lg font-medium">
+                            <div className="mb-2 text-lg font-medium">
                               Welcome {userName}
                             </div>
-                            <p className="text-sm leading-tight text-muted-foreground">
-                              Beautifully designed components built with Radix UI and
-                              Tailwind CSS.
-                            </p>
+                            {session?.user?.image ? <Image src={session?.user?.image} alt="User" width={70} height={50} /> : null}
                           </>
                         </NavigationMenuLink>
                       </li>
@@ -161,12 +173,14 @@ const MainNavigation = () => {
                           Check your profile
                         </ListItem>
                       </Link>
-                      <Link href="/admin" legacyBehavior passHref>
-                        <ListItem title="Panel">
-                          Administrator Panel
-                        </ListItem>
-                      </Link>
-                      <ListItem className="text-[30px] cursor-pointer" onClick={() => signOut()} title="Sign Out" />
+                      {currentUser?.role === 'admin' ? (
+                        <Link href="/admin" legacyBehavior passHref>
+                          <ListItem title="Panel">
+                            Administrator Panel
+                          </ListItem>
+                        </Link>
+                      ) : null}
+                      <ListItem className="text-[30px] cursor-pointer" onClick={handleSignOut} title="Sign Out" />
                     </ul>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
