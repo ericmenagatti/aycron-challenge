@@ -3,4 +3,5 @@ const PublishPage = () => {
     <div>PublishPage</div>
   )
 }
+
 export default PublishPage;

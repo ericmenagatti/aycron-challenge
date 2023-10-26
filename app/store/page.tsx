@@ -1,6 +1,8 @@
+import Link from "next/link";
+
 const StorePage = () => {
   return (
-    <div>StorePage</div>
+    <Link href={`/item/test`}>Store Page</Link>
   )
 }
 export default StorePage;

@@ -1,33 +1,21 @@
 'use client';
-import { useSession, signIn, signOut } from "next-auth/react";
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import Link from "next/link";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import PaymentForm from "@/components/stripe/PaymentForm";
+
+// const stripePromise = loadStripe(
+//   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+// );
 
 const HomePage = () => {
-  const { data: session } = useSession();
   return (
     <>
-      {!session ? (
-        <div className="inline-flex">
-          <p className='text-2xl font-bold'>Not signed in</p>
-          <br />
-          <Button onClick={() => signIn()}>Sign in</Button>
-        </div>
-      ) : (
-        <>
-          <p className='text-2xl font-bold'>Welcome back {session.user?.name}!</p>
-          {session.user?.image ?
-            <div className="inline-flex">
-              <Avatar>
-                <AvatarImage src={session.user?.image as string} alt="@shadcn" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-            </div>
-            : null}
-          <br />
-          <Button onClick={() => signOut()}>Sign out</Button>
-        </>
-      )}
+      {/* <Elements stripe={stripePromise}>
+        <PaymentForm />
+        <Link key="1" href={`/item/test`}>Main Page</Link>
+      </Elements> */}
+      <Link key="1" href={`/item/test`}>Main Page</Link>
     </>
   )
 }

@@ -1,6 +1,9 @@
+import ItemDetail from "@/components/items/ItemDetail";
+
 const ItemPage = () => {
   return (
-    <div>ItemPage</div>
+    <ItemDetail />
   )
 }
+
 export default ItemPage;
