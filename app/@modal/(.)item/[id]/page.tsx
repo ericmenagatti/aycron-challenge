@@ -5,7 +5,7 @@ import ItemContent from "@/components/items/ItemContent";
 const ItemModal = ({ params: { id } }: { params: { id: string } }) => {
   return (
     <Modal>
-      <ItemContent />
+      <ItemContent itemId={id} />
     </Modal>
   )
 }

@@ -1,8 +1,8 @@
 import ItemDetail from "@/components/items/ItemDetail";
 
-const ItemPage = () => {
+const ItemPage = ({ params: { id } }: { params: { id: string } }) => {
   return (
-    <ItemDetail />
+    <ItemDetail itemId={id} />
   )
 }
 

@@ -1,5 +1,7 @@
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
+import { FC, useEffect, useState } from 'react';
+import { IItem } from '@/models/Items';
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import {
@@ -10,16 +12,37 @@ import {
   CardHeader,
 } from "@/components/ui/card"
 
-const ItemContent = () => {
+interface IItemContentProps {
+  itemId: string;
+}
+
+const ItemContent: FC<IItemContentProps> = ({ itemId }) => {
   const { data: session } = useSession();
+  const [loading, setLoading] = useState(true);
+  const [itemData, setItemData] = useState<IItem | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch('http://localhost:3000/api/item', {
+      method: 'POST',
+      body: JSON.stringify({ id: '653b2c4091c73e5cc7d2c8ef' })
+    })
+      .then(response => response.json())
+      .then(data => setItemData(data))
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [itemId]);
+
+  if (loading) return null;
 
   return (
     <div className="flex justify-center">
       <Card className="w-[450px] border-none shadow-none">
-        <CardTitle className='mb-5'>Example Title</CardTitle>
+        <CardTitle className='mb-5'>{itemData?.title}</CardTitle>
         <CardHeader className='p-0'>
           <Image
-            src="https://lh3.googleusercontent.com/a/ACg8ocIJ5de0oM6H4XVMirF_FwkHSEUlpRr1WGUt3eLKZnBhKdc=s96-c"
+            src={itemData?.image!}
             alt="Item Image"
             height={300}
             width={450}
@@ -29,10 +52,7 @@ const ItemContent = () => {
           <form>
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="name">Item</Label>
-              </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="framework">Price</Label>
+                <Label htmlFor="framework">${itemData?.price}</Label>
               </div>
             </div>
           </form>
