@@ -1,6 +1,8 @@
+import ItemForm from "@/components/items/ItemForm";
+
 const PublishPage = () => {
   return (
-    <div>PublishPage</div>
+    <ItemForm />
   )
 }
 

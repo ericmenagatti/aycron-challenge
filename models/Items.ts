@@ -13,9 +13,16 @@ export interface IItem {
   status: string;
 }
 
+const InCartSchema = new Schema({
+  userEmail: {
+    type: String,
+    required: false,
+  },
+})
+
 const ItemSchema = new Schema({
   title: String,
-  price: String,
+  price: Number,
   image: String,
   createdDate: {
     type: Date,
@@ -25,9 +32,7 @@ const ItemSchema = new Schema({
     type: Date,
     default: Date.now(),
   },
-  inCart: [{
-    userEmail: String
-  }],
+  inCart: [InCartSchema],
   createdBy: {
     type: String,
     unique: true,
@@ -42,6 +47,6 @@ const ItemSchema = new Schema({
   },
 });
 
-const ItemModel = models.User || model('Item', ItemSchema);
+const ItemModel = models.Item || model('Item', ItemSchema);
 
 export default ItemModel;

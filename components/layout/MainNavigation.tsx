@@ -164,7 +164,9 @@ const MainNavigation = () => {
                             <div className="mb-2 text-lg font-medium">
                               Welcome {userName}
                             </div>
-                            {session?.user?.image ? <Image src={session?.user?.image} alt="User" width={70} height={50} /> : null}
+                            {session?.user?.image ? (
+                              <Image className="w-auto h-auto" src={session?.user?.image} alt="User" width={70} height={50} />
+                            ) : null}
                           </>
                         </NavigationMenuLink>
                       </li>

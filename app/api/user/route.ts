@@ -9,7 +9,7 @@ export const GET = async () => {
     const session = await getServerSession(authOptions);
     if (session) {
       await dbConnect();
-      const currentUser = await UserModel.find({ email: session?.user?.email });
+      const currentUser = await UserModel.findOne({ email: session?.user?.email }).lean().exec();
 
       return NextResponse.json(currentUser, { status: 200 });
     } else {
@@ -26,9 +26,9 @@ export const POST = async (req: Request) => {
     if (session) {
       const data = await req.json();
       await dbConnect();
-      const userExist = await UserModel.find({ email: session?.user?.email });
+      const userExist = await UserModel.findOne({ email: session?.user?.email }).lean().exec();
 
-      if (!userExist[0]) {
+      if (!userExist) {
         if (session?.user?.email === "ericmenagatti@gmail.com") {
           await UserModel.create({
             ...data,
@@ -39,9 +39,9 @@ export const POST = async (req: Request) => {
         }
         return NextResponse.json({ message: 'User created successfully!' }, { status: 200 });
       }
-      return NextResponse.json({ message: 'User already exist!' }, { status: 200 });
+      return NextResponse.json({ message: 'User already exist!' }, { status: 400 });
     } else {
-      return NextResponse.json({ message: 'User does not exist' }, { status: 200 });
+      return NextResponse.json({ message: 'User does not exist' }, { status: 400 });
     }
   } catch (error) {
     return NextResponse.json({ error: error }, { status: 500 });
