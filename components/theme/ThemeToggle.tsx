@@ -26,7 +26,7 @@ const ThemeToggle = () => {
 
   useEffect(() => {
     if (session) {
-      fetch('http://localhost:3000/api/user')
+      fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/user`)
         .then(response => response.json())
         .then(data => {
           setTheme(data?.theme || 'light');
@@ -37,7 +37,7 @@ const ThemeToggle = () => {
   const handleThemeToggle = () => {
     if (theme === 'light') {
       setTheme('dark');
-      fetch('http://localhost:3000/api/user', {
+      fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/user`, {
         method: 'PUT',
         body: JSON.stringify({
           ...session?.user,
@@ -46,7 +46,7 @@ const ThemeToggle = () => {
       })
     } else {
       setTheme('light');
-      fetch('http://localhost:3000/api/user', {
+      fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/user`, {
         method: 'PUT',
         body: JSON.stringify({
           ...session?.user,

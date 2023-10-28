@@ -39,7 +39,7 @@ const UserPage = () => {
 
   const loadAllItems = () => {
     setLoading(true);
-    fetch('http://localhost:3000/api/items', {
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/items`, {
       method: 'POST',
       body: JSON.stringify({
         query: '',
@@ -53,7 +53,7 @@ const UserPage = () => {
   }
 
   const handlePauseItem = (itemId: string) => {
-    fetch('http://localhost:3000/api/item', {
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/item`, {
       method: 'PUT',
       body: JSON.stringify({
         id: itemId,
@@ -63,7 +63,7 @@ const UserPage = () => {
   }
 
   const handleUnpauseItem = (itemId: string) => {
-    fetch('http://localhost:3000/api/item', {
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/item`, {
       method: 'PUT',
       body: JSON.stringify({
         id: itemId,
@@ -73,7 +73,7 @@ const UserPage = () => {
   }
 
   const handleRemoveItem = (itemId: string) => {
-    fetch('http://localhost:3000/api/item', {
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/item`, {
       method: 'PUT',
       body: JSON.stringify({
         id: itemId,

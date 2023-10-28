@@ -63,7 +63,7 @@ const PaymentForm: FC<IPaymentFormProps> = ({ itemId, amount, togglePayment }) =
       });
 
       if (stripeResponse?.paymentIntent?.status === 'succeeded') {
-        fetch('http://localhost:3000/api/stripe-payment', {
+        fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/stripe-payment`, {
           method: 'PUT',
           body: JSON.stringify({
             id: itemId,

@@ -27,7 +27,7 @@ const ItemDetail: FC<IItemDetailProps> = ({ itemId }) => {
 
   useEffect(() => {
     setLoading(true);
-    fetch('http://localhost:3000/api/item', {
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/item`, {
       method: 'POST',
       body: JSON.stringify({ id: itemId })
     })
@@ -43,7 +43,7 @@ const ItemDetail: FC<IItemDetailProps> = ({ itemId }) => {
   }, [itemId]);
 
   const handleAddToCartItem = () => {
-    fetch('http://localhost:3000/api/cart', {
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/cart`, {
       method: 'PUT',
       body: JSON.stringify({
         id: itemId

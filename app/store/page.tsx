@@ -24,7 +24,7 @@ interface StoreItem extends IItem {
 const StorePage = () => {
   const [loading, setLoading] = useState(true);
   const [formError, setFormError] = useState(false);
-  const [storeItems, setStoreItems] = useState<StoreItem[] | null>(null);
+  const [storeItems, setStoreItems] = useState<StoreItem[]>([]);
 
   const formSchema = z.object({
     search: z.string().max(40, {
@@ -53,7 +53,7 @@ const StorePage = () => {
 
   const loadStoreItems = (query: string) => {
     setLoading(true);
-    fetch('http://localhost:3000/api/items', {
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/items`, {
       method: 'POST',
       body: JSON.stringify({
         query,
@@ -62,7 +62,9 @@ const StorePage = () => {
     })
       .then(response => response.json())
       .then(data => {
-        setStoreItems(data);
+        if (data.length > 0) {
+          setStoreItems(data);
+        }
       })
       .finally(() => {
         setLoading(false);
@@ -70,7 +72,7 @@ const StorePage = () => {
   }
 
   const handleAddToCartItem = (itemId: string) => {
-    fetch('http://localhost:3000/api/cart', {
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/cart`, {
       method: 'PUT',
       body: JSON.stringify({
         id: itemId
@@ -92,7 +94,7 @@ const StorePage = () => {
     )
   }
 
-  if (storeItems === null || storeItems.length === 0) {
+  if (storeItems.length === 0) {
     return (
       <div className="flex flex-col justify-center items-center">
         <div className="w-[600px] pt-10 pb-0">

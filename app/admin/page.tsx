@@ -12,14 +12,14 @@ const AdminPanelPage = () => {
   const [currentUser, setCurrentUser] = useState<IUser>();
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/user', {
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/user`, {
       method: 'POST',
       body: JSON.stringify({
         ...session?.user,
         role: 'user',
       })
     });
-    fetch('http://localhost:3000/api/user')
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/user`)
       .then(response => response.json())
       .then(data => {
         setCurrentUser(data);

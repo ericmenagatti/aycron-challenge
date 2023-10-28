@@ -10,7 +10,7 @@ interface FeaturedItem extends IItem {
 
 const HomePage = () => {
   const [loading, setLoading] = useState(true);
-  const [featuredItems, setFeaturedItems] = useState<FeaturedItem[] | null>(null);
+  const [featuredItems, setFeaturedItems] = useState<FeaturedItem[]>([]);
 
   useEffect(() => {
     loadFeaturedItems()
@@ -18,10 +18,12 @@ const HomePage = () => {
 
   const loadFeaturedItems = () => {
     setLoading(true);
-    fetch('http://localhost:3000/api/items')
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/items`)
       .then(response => response.json())
       .then(data => {
-        setFeaturedItems(data);
+        if (data.length > 0) {
+          setFeaturedItems(data);
+        }
       })
       .finally(() => {
         setLoading(false);
@@ -29,7 +31,7 @@ const HomePage = () => {
   }
 
   const handleAddToCartItem = (itemId: string) => {
-    fetch('http://localhost:3000/api/cart', {
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/cart`, {
       method: 'PUT',
       body: JSON.stringify({
         id: itemId
@@ -47,7 +49,7 @@ const HomePage = () => {
     )
   }
 
-  if (featuredItems === null || featuredItems.length === 0) {
+  if (featuredItems.length === 0) {
     return (
       <div className="flex justify-center">
         <Card className="flex flex-col justify-center align-middle w-[450px] mt-10">
@@ -61,7 +63,7 @@ const HomePage = () => {
     <>
       <div className="text-center mt-10 mb-4 text-2xl font-semibold">Featured</div>
       <div className="grid lg:grid-cols-4 gap-6 mb-10">
-        {featuredItems.map((item) => (
+        {featuredItems?.map((item) => (
           <Item
             key={item._id}
             itemId={item._id}

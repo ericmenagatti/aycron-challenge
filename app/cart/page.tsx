@@ -32,7 +32,7 @@ const CartPage = () => {
   const loadCartItems = (session: any) => {
     if (session) {
       setLoading(true);
-      fetch('http://localhost:3000/api/cart')
+      fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/cart`)
         .then(response => response.json())
         .then(data => {
           setCartItems(data);
@@ -46,7 +46,7 @@ const CartPage = () => {
   }
 
   const handleRemoveCartItem = (itemId: string) => {
-    fetch('http://localhost:3000/api/cart', {
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/cart`, {
       method: 'DELETE',
       body: JSON.stringify({
         id: itemId

@@ -54,7 +54,7 @@ const ItemForm = () => {
 
   // random url for unsplash images : https://source.unsplash.com/random
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    fetch('http://localhost:3000/api/publish', {
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/publish`, {
       method: 'POST',
       body: JSON.stringify({
         title: values.title,

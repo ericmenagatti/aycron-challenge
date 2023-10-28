@@ -31,7 +31,7 @@ const ItemCheckout: FC<IItemCheckoutProps> = ({ itemId }) => {
 
   useEffect(() => {
     setLoading(true);
-    fetch('http://localhost:3000/api/item', {
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/item`, {
       method: 'POST',
       body: JSON.stringify({ id: itemId })
     })
