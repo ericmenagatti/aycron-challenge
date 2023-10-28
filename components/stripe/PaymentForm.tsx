@@ -1,13 +1,13 @@
 "use client";
 import {
   CardElement,
-  CardNumberElement,
-  CardExpiryElement,
-  CardCvcElement,
   useElements,
   useStripe
 } from "@stripe/react-stripe-js";
+import { Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { FC, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const styleOptions = {
   style: {
@@ -27,12 +27,21 @@ const styleOptions = {
   }
 }
 
-const PaymentForm = () => {
+interface IPaymentFormProps {
+  itemId: string[];
+  amount: number;
+  togglePayment: () => void;
+}
+
+const PaymentForm: FC<IPaymentFormProps> = ({ itemId, amount, togglePayment }) => {
   const stripe = useStripe();
   const elements = useElements();
+  const route = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
     const cardElement = elements?.getElement("card");
 
     try {
@@ -40,7 +49,7 @@ const PaymentForm = () => {
 
       const response = await fetch("/api/stripe-payment", {
         method: "POST",
-        body: JSON.stringify({ data: { amount: 89 } }),
+        body: JSON.stringify({ data: { amount: amount } }),
         headers: {
           "Content-Type": "application/json",
         },
@@ -49,43 +58,43 @@ const PaymentForm = () => {
 
       const clientSecret = data;
 
-      // const stripeResponse = await stripe?.confirmCardPayment(clientSecret, {
-      //   payment_method: { card: cardElement },
-      // });
-
-      // const stripeResponse = await stripe?.createPaymentMethod({
-      //   type: "card",
-      //   card: cardElement
-      // });
-
-      const stripeResponse = await stripe?.createPaymentMethod({
-        type: "card",
-        card: cardElement
+      const stripeResponse = await stripe?.confirmCardPayment(clientSecret, {
+        payment_method: { card: cardElement },
       });
 
-      console.log(stripeResponse);
-
+      if (stripeResponse?.paymentIntent?.status === 'succeeded') {
+        fetch('http://localhost:3000/api/stripe-payment', {
+          method: 'PUT',
+          body: JSON.stringify({
+            id: itemId,
+            status: 'sold',
+          })
+        });
+        route.push('/user');
+      }
+      setLoading(false);
     } catch (error) {
-      console.log(error);
+      setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={onSubmit}
-      className="
-      grid
-      max-w-md
-      space-y-4
-      border-solid
-      border-2
-      border-sky-500
-      p-3
-      mt-4
-    "
-    >
-      <label className="font-bold">Card Details</label>
+    <form onSubmit={onSubmit} className="grid max-w-md space-y-4 p-3 mt-4">
+      <div className="text-center flex items-center justify-between">
+        <label className="font-bold">Card Details</label>
+        <Button variant="outline" size="icon" onClick={togglePayment}>
+          <X />
+        </Button>
+      </div>
       <CardElement options={styleOptions} />
-      <Button type="submit">Pay</Button>
+      {!loading ? (
+        <Button className="bg-blue-500 dark:bg-green-500" variant="outline" type="submit">PAY</Button>
+      ) : (
+        <Button className="bg-blue-500 dark:bg-green-500" variant="outline" type="submit" disabled>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          LOADING
+        </Button>
+      )}
     </form>
   );
 }

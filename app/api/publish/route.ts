@@ -8,6 +8,7 @@ import ItemModel from "@/models/Items";
 export const POST = async (req: Request) => {
   try {
     const session = await getServerSession(authOptions);
+    let response = 0;
     if (session) {
       const data = await req.json();
       await dbConnect();
@@ -22,11 +23,18 @@ export const POST = async (req: Request) => {
           createdDate: new Date(),
           lastUpdate: new Date(),
           status: 'active',
+          featured: false,
           createdBy: session?.user?.email,
         }
-        await ItemModel.create(itemObject);
-
-        return NextResponse.json({ message: 'Item created successfully!' }, { status: 200 });
+        if (session?.user?.email === "ericmenagatti@gmail.com") {
+          response = await ItemModel.create({
+            ...itemObject,
+            featured: true,
+          });
+        } else {
+          response = await ItemModel.create(itemObject);
+        }
+        return NextResponse.json({ message: 'Item created successfully!', item: response }, { status: 200 });
       }
       return NextResponse.json({ message: "User doesn't exist in our database!" }, { status: 400 });
     } else {

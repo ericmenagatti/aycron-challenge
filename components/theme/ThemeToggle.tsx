@@ -29,7 +29,7 @@ const ThemeToggle = () => {
       fetch('http://localhost:3000/api/user')
         .then(response => response.json())
         .then(data => {
-          setTheme(data?.[0]?.theme || 'light');
+          setTheme(data?.theme || 'light');
         });
     }
   }, [status, session, setTheme]);

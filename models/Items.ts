@@ -4,6 +4,7 @@ export interface IItem {
   title: string;
   price: string;
   image: string;
+  createdBy: string;
   createdDate: Date;
   lastUpdate: Date;
   inCart: {
@@ -11,6 +12,7 @@ export interface IItem {
   }[];
   boughtBy: string;
   status: string;
+  featured: boolean;
 }
 
 const InCartSchema = new Schema({
@@ -33,10 +35,7 @@ const ItemSchema = new Schema({
     default: Date.now(),
   },
   inCart: [InCartSchema],
-  createdBy: {
-    type: String,
-    unique: true,
-  },
+  createdBy: String,
   boughtBy: {
     type: String,
     unique: true,
@@ -45,6 +44,7 @@ const ItemSchema = new Schema({
     type: String,
     enum: ['active', 'paused', 'removed', 'sold'],
   },
+  featured: Boolean,
 });
 
 const ItemModel = models.Item || model('Item', ItemSchema);

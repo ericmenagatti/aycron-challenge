@@ -77,14 +77,14 @@ const MainNavigation = () => {
       fetch('http://localhost:3000/api/user')
         .then(response => response.json())
         .then(data => {
-          setCurrentUser(data?.[0]);
+          setCurrentUser(data);
         });
     }
   }, [session]);
 
   if (status === 'loading') {
     return (
-      <div className="flex flex-column p-10 justify-between bg-blue-600 max-sm:text-center max-sm:pl-0 max-sm:pr-0 max-sm:flex-col">
+      <div className="flex flex-column px-10 py-5 justify-between bg-blue-600 max-sm:text-center max-sm:pl-0 max-sm:pr-0 max-sm:flex-col">
         <Link href="/" className="text-[40px]">Items Store</Link>
         <div className="flex flex-row gap-1 justify-center items-center ">
           <NavigationMenu>
@@ -118,7 +118,7 @@ const MainNavigation = () => {
   }
 
   return (
-    <div className="flex flex-column p-10 justify-between bg-blue-600 max-sm:text-center max-sm:pl-0 max-sm:pr-0 max-sm:flex-col">
+    <div className="flex flex-column px-10 py-5 justify-between bg-blue-600 max-sm:text-center max-sm:pl-0 max-sm:pr-0 max-sm:flex-col">
       <Link href="/" className="text-[40px]">Items Store</Link>
       <div className="flex flex-row gap-1 justify-center items-center ">
         <NavigationMenu>

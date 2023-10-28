@@ -15,3 +15,25 @@ export const POST = async (req: Request) => {
     return NextResponse.json({ error: error }, { status: 500 });
   }
 };
+
+export const PUT = async (req: Request) => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (session) {
+      const data = await req.json();
+      await dbConnect();
+
+      const currentItem: any = await ItemModel.findById(data.id).lean().exec();
+
+      if (currentItem?.createdBy === session?.user?.email) {
+        await ItemModel.findByIdAndUpdate({ _id: data.id }, { status: data.status });
+        return NextResponse.json({ message: 'Item updated successfully!' }, { status: 200 });
+      }
+      return NextResponse.json({ message: 'Unauthorized User.' }, { status: 200 });
+    } else {
+      return NextResponse.json({ message: 'Item does not exist.' }, { status: 200 });
+    }
+  } catch (error) {
+    return NextResponse.json({ error: error }, { status: 500 });
+  }
+};

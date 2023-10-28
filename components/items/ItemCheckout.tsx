@@ -1,5 +1,9 @@
+'use client';
 import Image from 'next/image';
+import { useRouter } from "next/navigation";
 import { FC, useEffect, useState } from 'react';
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 import { IItem } from '@/models/Items';
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -9,16 +13,21 @@ import {
   CardContent,
   CardHeader,
 } from "@/components/ui/card"
-import { useRouter } from 'next/navigation';
+import PaymentForm from '@/components/stripe/PaymentForm';
 
-interface IItemContentProps {
+interface IItemCheckoutProps {
   itemId: string;
 }
 
-const ItemContent: FC<IItemContentProps> = ({ itemId }) => {
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+);
+
+const ItemCheckout: FC<IItemCheckoutProps> = ({ itemId }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [itemData, setItemData] = useState<IItem | null>(null);
+  const [paymentToggle, setPaymentToggle] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -37,10 +46,12 @@ const ItemContent: FC<IItemContentProps> = ({ itemId }) => {
       });
   }, [itemId]);
 
+  const handlePaymentToggle = () => setPaymentToggle((prev) => !prev);
+
   if (loading) {
     return (
       <div className="flex justify-center">
-        <Card className="w-[450px] border-none shadow-none">
+        <Card className="w-[450px] mt-10 pb-5">
           <CardTitle className='px-6 pt-4'>Loading...</CardTitle>
         </Card>
       </div>
@@ -50,8 +61,8 @@ const ItemContent: FC<IItemContentProps> = ({ itemId }) => {
   if (itemData === null) {
     return (
       <div className="flex justify-center">
-        <Card className="w-[450px] border-none shadow-none">
-          <CardTitle className='mb-5'>Item not found</CardTitle>
+        <Card className="flex flex-col justify-center align-middle w-[450px] mt-10">
+          <CardTitle className='px-6 pt-4 pb-2 text-center'>Item not found</CardTitle>
           <Button variant="outline" onClick={() => router.back()}>Go Back</Button>
         </Card>
       </div>
@@ -59,18 +70,18 @@ const ItemContent: FC<IItemContentProps> = ({ itemId }) => {
   }
 
   return (
-    <div className="flex justify-center">
-      <Card className="w-[750px] border-none shadow-none">
-        <CardTitle className='mb-5'>{itemData?.title}</CardTitle>
-        <CardHeader className='p-0'>
+    <div className="flex flex-col items-center justify-center">
+      <Card className="w-[450px] mt-10">
+        <CardTitle className='px-6 pt-4'>{itemData?.title}</CardTitle>
+        <CardHeader>
           <Image
             src={itemData?.image!}
             alt="Item Image"
-            height={300}
-            width={450}
+            height={550}
+            width={500}
           />
         </CardHeader>
-        <CardContent className='mt-5 px-0'>
+        <CardContent>
           <form>
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-1.5">
@@ -80,8 +91,25 @@ const ItemContent: FC<IItemContentProps> = ({ itemId }) => {
           </form>
         </CardContent>
       </Card>
+      <Card className="w-[450px] mt-1">
+        {!paymentToggle ? (
+          <div className="flex justify-end">
+            <Button
+              className=" bg-blue-500 dark:bg-green-500 w-full"
+              variant="outline"
+              onClick={handlePaymentToggle}
+            >
+              PURCHASE
+            </Button>
+          </div>
+        ) : (
+          <Elements stripe={stripePromise}>
+            <PaymentForm itemId={[itemId]} amount={+itemData.price} togglePayment={handlePaymentToggle} />
+          </Elements>
+        )}
+      </Card>
     </div>
   )
 }
 
-export default ItemContent;
+export default ItemCheckout;

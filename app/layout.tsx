@@ -27,7 +27,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={cn(inter.className, 'bg-blue-100')}>
+      <body className={cn(inter.className, 'bg-blue-100 dark:bg-zinc-800')}>
         <ThemeProvider
           attribute='class'
           defaultTheme='light'

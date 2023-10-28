@@ -22,8 +22,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Input } from "@/components/ui/input"
+import { Card } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
 
 const ItemForm = () => {
+  const router = useRouter();
   const [currentImage, setCurrentImage] = useState("");
 
   const formSchema = z.object({
@@ -58,7 +61,16 @@ const ItemForm = () => {
         image: values.image,
         price: +values.price,
       }),
-    });
+    }).then((response) => response.json())
+      .then(data => {
+        router.push(`/item/${data.item._id}`)
+        form.reset();
+        setCurrentImage('');
+      })
+      .finally(() => {
+        form.reset();
+        setCurrentImage('');
+      });
   }
 
   const getImage = (e: React.MouseEvent) => {
@@ -71,7 +83,7 @@ const ItemForm = () => {
 
   return (
     <div className="flex justify-center mt-10">
-      <div className="w-[600px] border border-red-400 border-solid p-10">
+      <Card className="w-[600px] p-6">
         {currentImage ? (
           <Image src={currentImage} alt="Item Image" width={550} height={500} />
         ) : null}
@@ -136,7 +148,7 @@ const ItemForm = () => {
             <Button className="w-full" type="submit" size="lg">PUBLISH</Button>
           </form>
         </Form>
-      </div>
+      </Card>
     </div>
   )
 

@@ -1,6 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
+import { useRouter } from "next/navigation";
 import { FC, useEffect, useState } from 'react';
 import { IItem } from '@/models/Items';
 import { Button } from "@/components/ui/button"
@@ -12,12 +13,14 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card"
+import Link from 'next/link';
 
 interface IItemDetailProps {
   itemId: string;
 }
 
 const ItemDetail: FC<IItemDetailProps> = ({ itemId }) => {
+  const router = useRouter();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
   const [itemData, setItemData] = useState<IItem | null>(null);
@@ -39,9 +42,35 @@ const ItemDetail: FC<IItemDetailProps> = ({ itemId }) => {
       });
   }, [itemId]);
 
-  if (loading) return null;
+  const handleAddToCartItem = () => {
+    fetch('http://localhost:3000/api/cart', {
+      method: 'PUT',
+      body: JSON.stringify({
+        id: itemId
+      })
+    });
+  }
 
-  if (itemData === null) return null;
+  if (loading) {
+    return (
+      <div className="flex justify-center">
+        <Card className="w-[450px] mt-10 pb-5">
+          <CardTitle className='px-6 pt-4'>Loading...</CardTitle>
+        </Card>
+      </div>
+    )
+  }
+
+  if (itemData === null) {
+    return (
+      <div className="flex justify-center">
+        <Card className="flex flex-col justify-center align-middle w-[450px] mt-10">
+          <CardTitle className='px-6 pt-4 pb-2 text-center'>Item not found</CardTitle>
+          <Button variant="outline" onClick={() => router.back()}>Go Back</Button>
+        </Card>
+      </div>
+    )
+  }
 
   return (
     <div className="flex justify-center">
@@ -65,8 +94,12 @@ const ItemDetail: FC<IItemDetailProps> = ({ itemId }) => {
           </form>
         </CardContent>
         <CardFooter className="flex gap-5">
-          {session ? <Button className="flex-1" variant="outline">Add to Cart</Button> : null}
-          <Button className="flex-1">Buy</Button>
+          {session ? (
+            <Button className="flex-1" variant="outline" onClick={handleAddToCartItem}>Add to Cart</Button>
+          ) : null}
+          <Link href={`/checkout/${itemId}`} legacyBehavior passHref>
+            <Button className="flex-1">Buy</Button>
+          </Link>
         </CardFooter>
       </Card>
     </div>
