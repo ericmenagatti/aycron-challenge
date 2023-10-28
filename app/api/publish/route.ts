@@ -25,6 +25,7 @@ export const POST = async (req: Request) => {
           status: 'active',
           featured: false,
           createdBy: session?.user?.email,
+          boughtBy: '',
         }
         if (session?.user?.email === "ericmenagatti@gmail.com") {
           response = await ItemModel.create({

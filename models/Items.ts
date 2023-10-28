@@ -38,7 +38,6 @@ const ItemSchema = new Schema({
   createdBy: String,
   boughtBy: {
     type: String,
-    unique: true,
   },
   status: {
     type: String,
